@@ -65,7 +65,7 @@ bot.command('subscribe', ctx => {
     localStorage.setItem('subsList', JSON.stringify(arr));
     ctx.reply('Added to subscription');
   } else {
-    ctx.reply('Already subscribed')''
+    ctx.reply('Already subscribed');
   }
 })
 
