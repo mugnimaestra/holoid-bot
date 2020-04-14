@@ -86,14 +86,22 @@ stream.on('tweet', function (tweet) {
   console.log(tweet);
   let arr = localStorage.getItem('subsList') ? JSON.parse(localStorage.getItem('subsList')) : [];
   const thisTweet = holoIdMember.indexOf(tweet.user.id);
-  if (thisTweet > -1 ) {
-    arr.forEach(recipientID => {
-      bot.telegram.sendMessage(recipientID, `Tweet from @${tweet.user.screen_name}
-
-      ===
-      ${tweet.text}
-      ===`)
+  const notReplying =
+      !tweet.in_reply_to_status_id &&
+      !tweet.in_reply_to_status_id_str &&
+      !tweet.in_reply_to_user_id &&
+      !tweet.in_reply_to_user_id_str &&
+      !tweet.in_reply_to_screen_name;
+  if (thisTweet > -1) {
+    if (tweet.extended_tweet) {
+      arr.forEach(recipientID => {
+        bot.telegram.sendMessage(recipientID, `Tweet from ${tweet.user.screen_name}\n\n${tweet.extended_tweet.full_text}`)
+      });
+    } else {
+      arr.forEach(recipientID => {
+      bot.telegram.sendMessage(recipientID, `Tweet from ${tweet.user.screen_name}\n\n${tweet.text}`)
     });
+    }
   }
 });
 
