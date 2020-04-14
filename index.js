@@ -59,9 +59,14 @@ bot.command('echo', ctx => {
 bot.command('subscribe', ctx => {
   let arr = localStorage.getItem('subsList') ? JSON.parse(localStorage.getItem('subsList')) : [];
   console.log(ctx.message);
-  arr.push(ctx.message.chat.id);
-  localStorage.setItem('subsList', JSON.stringify(arr));
-  ctx.reply('Added to subscription');
+  const idxID = arr.indexOf(ctx.message.chat.id);
+  if (idxID > -1) {
+    arr.push(ctx.message.chat.id);
+    localStorage.setItem('subsList', JSON.stringify(arr));
+    ctx.reply('Added to subscription');
+  } else {
+    ctx.reply('Already subscribed')''
+  }
 })
 
 bot.command('unsubscribe', ctx => {
