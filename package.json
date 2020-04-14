@@ -1,0 +1,20 @@
+{
+  "name": "holoid-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "node-localstorage": "^2.1.6",
+    "redis": "^3.0.2",
+    "telegraf": "^3.37.0",
+    "telegraf-session-redis": "^5.1.0",
+    "twit": "^2.2.11"
+  }
+}
