@@ -91,12 +91,6 @@ stream.on('tweet', function (tweet) {
   let message = '';
   let arr = localStorage.getItem('subsList') ? JSON.parse(localStorage.getItem('subsList')) : [];
   const thisTweet = holoIdMember.indexOf(tweet.user.id);
-  // const notReplying =
-  //     !tweet.in_reply_to_status_id &&
-  //     !tweet.in_reply_to_status_id_str &&
-  //     !tweet.in_reply_to_user_id &&
-  //     !tweet.in_reply_to_user_id_str &&
-  //     !tweet.in_reply_to_screen_name;
   if (thisTweet > -1) {
     switch (true) {
       case tweet.retweeted_status: {
