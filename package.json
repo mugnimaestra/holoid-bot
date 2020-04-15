@@ -17,5 +17,8 @@
     "telegraf": "^3.37.0",
     "telegraf-session-redis": "^5.1.0",
     "twit": "^2.2.11"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0"
   }
 }

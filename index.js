@@ -17,9 +17,10 @@ const T = new Twit({
 // Risu: 1234752200145899520
 // Iofi: 1235180878449397764
 // Hololive ID: 1204978594490961920
-const holoIdMember = [1234753886520393729, 1234752200145899520, 1235180878449397764]
-const tweetID = '1234753886520393729,1234752200145899520,1235180878449397764,1204978594490961920'
-const devTweetID = '172803635';
+// const holoIdMember = [1234753886520393729, 1234752200145899520, 1235180878449397764]
+const holoIdMember = [172803635]; // development testing using my own twitter ID
+// const tweetID = '1234753886520393729,1234752200145899520,1235180878449397764,1204978594490961920';
+const tweetID = '172803635'; // development testing using my own twitter ID
 const stream = T.stream('statuses/filter', {
   follow: tweetID,
 })
@@ -57,15 +58,19 @@ bot.command('echo', ctx => {
 })
 
 bot.command('subscribe', ctx => {
-  let arr = localStorage.getItem('subsList') ? JSON.parse(localStorage.getItem('subsList')) : [];
-  console.log(ctx.message);
-  const idxID = arr.indexOf(ctx.message.chat.id);
-  if (idxID > -1) {
-    arr.push(ctx.message.chat.id);
-    localStorage.setItem('subsList', JSON.stringify(arr));
-    ctx.reply('Added to subscription');
-  } else {
-    ctx.reply('Already subscribed');
+  try {
+    let arr = localStorage.getItem('subsList') ? JSON.parse(localStorage.getItem('subsList')) : [];
+      console.log(ctx.message);
+      const idxID = arr.indexOf(ctx.message.chat.id);
+      if (idxID === -1) {
+        arr.push(ctx.message.chat.id);
+        localStorage.setItem('subsList', JSON.stringify(arr));
+        ctx.reply('Added to subscription');
+      } else {
+        ctx.reply('Already subscribed');
+      }
+  } catch(err) {
+    ctx.reply('Something happened, cannot subscribe');
   }
 })
 
@@ -79,36 +84,75 @@ bot.command('unsubscribe', ctx => {
   ctx.reply('Succesfully unsubscribe');
 })
 
-bot.command('show', ctx => {
-  let arr = localStorage.getItem('subsList') ? JSON.parse(localStorage.getItem('subsList')) : [];
-  let stringArr = arr.join(' ');
-  ctx.reply('Subscription list' + stringArr)
-})
-
-
 console.log('Waiting for tweets');
 
 stream.on('tweet', function (tweet) {
   console.log(tweet);
+  let message = '';
   let arr = localStorage.getItem('subsList') ? JSON.parse(localStorage.getItem('subsList')) : [];
   const thisTweet = holoIdMember.indexOf(tweet.user.id);
-  const notReplying =
-      !tweet.in_reply_to_status_id &&
-      !tweet.in_reply_to_status_id_str &&
-      !tweet.in_reply_to_user_id &&
-      !tweet.in_reply_to_user_id_str &&
-      !tweet.in_reply_to_screen_name;
+  // const notReplying =
+  //     !tweet.in_reply_to_status_id &&
+  //     !tweet.in_reply_to_status_id_str &&
+  //     !tweet.in_reply_to_user_id &&
+  //     !tweet.in_reply_to_user_id_str &&
+  //     !tweet.in_reply_to_screen_name;
   if (thisTweet > -1) {
-    if (tweet.extended_tweet) {
-      arr.forEach(recipientID => {
-        bot.telegram.sendMessage(recipientID, `Tweet from ${tweet.user.screen_name}\n\n${tweet.extended_tweet.full_text}`)
-      });
-    } else {
-      arr.forEach(recipientID => {
-      bot.telegram.sendMessage(recipientID, `Tweet from ${tweet.user.screen_name}\n\n${tweet.text}`)
-    });
+    switch (true) {
+      case tweet.retweeted_status: {
+        message = `><a href="https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}">${tweet.user.screen_name}</a> retweeted:
+      \n${tweet.retweeted_status.user.screen_name} tweeted:
+      ${tweet.retweeted_status.text}`;
+        break;
+      }
+      case tweet.quoted_status: {
+        message = `><a href="https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}">${tweet.user.screen_name}</a> tweeted:
+      \n${tweet.text}
+
+      quoted tweet:
+      >${tweet.quoted_status.user.screen_name} tweeted:
+      ${tweet.quoted_status.text}`;
+        break;
+      }
+      case tweet.extended_tweet: {
+        message = `><a href="https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}">${tweet.user.screen_name}</a> tweeted:
+      \n${tweet.extended_tweet.full_text}`;
+        break;
+      }
+      case tweet.text: {
+        message = `><a href="https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}">${tweet.user.screen_name}</a> tweeted:
+      \n${tweet.text}`;
+      }
+      default:
     }
+
+    if (tweet.extended_tweet) {
+      message = `><a href="https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}">${tweet.user.screen_name}</a> tweeted:
+    \n${tweet.extended_tweet.full_text}`;
+    } else {
+      message = `><a href="https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}">${tweet.user.screen_name}</a> tweeted:
+    \n${tweet.text}`
+    }
+
+    if (tweet.retweeted_status) {
+      message = `><a href="https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}">${tweet.user.screen_name}</a> retweeted:
+      \n>>${tweet.retweeted_status.user.screen_name}\n\n${tweet.retweeted_status.text}`;
+    }
+
+    if (tweet.quoted_status) {
+      message = `><a href="https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}">${tweet.user.screen_name}</a> tweeted:
+      \n${tweet.text}\n\nquoted tweet:\n>>${tweet.quoted_status.user.screen_name}\n\n${tweet.quoted_status.text}`;
+    }
+
+    if (tweet.in_reply_to_status_id_str) {
+      message = `><a href="https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}">${tweet.user.screen_name}</a> replying tweet:
+      \n${tweet.text}\n\nto this <a href="https://twitter.com/i/status/${tweet.in_reply_to_status_id_str}">tweet</a>`
+    }
+    arr.forEach(recipientID => {
+      bot.telegram.sendMessage(recipientID, message, { parse_mode: 'HTML' })
+    })
   }
+  // bot.telegram.sendMessage(-457078482 ,`Tweet from ${tweet.user.screen_name}\n\n${tweet.text}`)
 });
 
 bot.launch();
