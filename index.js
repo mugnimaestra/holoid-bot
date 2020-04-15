@@ -17,10 +17,10 @@ const T = new Twit({
 // Risu: 1234752200145899520
 // Iofi: 1235180878449397764
 // Hololive ID: 1204978594490961920
-// const holoIdMember = [1234753886520393729, 1234752200145899520, 1235180878449397764]
-const holoIdMember = [172803635]; // development testing using my own twitter ID
-// const tweetID = '1234753886520393729,1234752200145899520,1235180878449397764,1204978594490961920';
-const tweetID = '172803635'; // development testing using my own twitter ID
+const holoIdMember = [1234753886520393729, 1234752200145899520, 1235180878449397764]
+// const holoIdMember = [172803635]; // development testing using my own twitter ID
+const tweetID = '1234753886520393729,1234752200145899520,1235180878449397764,1204978594490961920';
+// const tweetID = '172803635'; // development testing using my own twitter ID
 const stream = T.stream('statuses/filter', {
   follow: tweetID,
 })
