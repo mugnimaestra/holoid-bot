@@ -1,10 +1,11 @@
+require('newrelic');
 require('dotenv').config();
 const express = require('express')
 const expressApp = express()
 
 const port = process.env.PORT || 3000
 expressApp.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('Please visit http://t.me/holoidbot to access this bot')
 })
 expressApp.listen(port, () => {
   console.log(`Listening on port ${port}`)
