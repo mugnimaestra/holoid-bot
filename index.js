@@ -149,4 +149,6 @@ stream.on('tweet', function (tweet) {
   // bot.telegram.sendMessage(-457078482 ,`Tweet from ${tweet.user.screen_name}\n\n${tweet.text}`)
 });
 
+console.log('the bot are running...')
+
 bot.launch();
