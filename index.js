@@ -1,4 +1,14 @@
 require('dotenv').config();
+const express = require('express')
+const expressApp = express()
+
+const port = process.env.PORT || 3000
+expressApp.get('/', (req, res) => {
+  res.send('Hello World!')
+})
+expressApp.listen(port, () => {
+  console.log(`Listening on port ${port}`)
+})
 const Telegraf = require('telegraf');
 const RedisSession = require('telegraf-session-redis');
 const LocalStorage = require('node-localstorage').LocalStorage,
