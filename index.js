@@ -175,6 +175,4 @@ stream.on('tweet', function (tweet) {
 
 
 console.log('the bot are running...')
-bot.telegram.sendMessage('@hololiveid', 'Test', { parse_mode: 'HTML' })
-
 bot.launch();
