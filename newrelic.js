@@ -9,11 +9,11 @@ exports.config = {
   /**
    * Array of application names.
    */
-  app_name: ['My Application'],
+  app_name: ['Hololive ID Telegram Bot'],
   /**
    * Your New Relic license key.
    */
-  license_key: 'license key here',
+  license_key: '94299ba2f41953772292dea535d336785724NRAL',
   logging: {
     /**
      * Level at which to log. 'trace' is most useful to New Relic when diagnosing

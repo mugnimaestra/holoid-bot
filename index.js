@@ -1,7 +1,8 @@
 require('newrelic');
 require('dotenv').config();
-const express = require('express')
-const expressApp = express()
+const express = require('express');
+// const { getSubList, postSubList } = require('./aws');
+const expressApp = express();
 
 const port = process.env.PORT || 3000
 expressApp.get('/', (req, res) => {
@@ -10,6 +11,7 @@ expressApp.get('/', (req, res) => {
 expressApp.listen(port, () => {
   console.log(`Listening on port ${port}`)
 })
+
 const Telegraf = require('telegraf');
 const RedisSession = require('telegraf-session-redis');
 const LocalStorage = require('node-localstorage').LocalStorage,
@@ -35,6 +37,14 @@ const tweetID = '1234753886520393729,1234752200145899520,1235180878449397764,120
 const stream = T.stream('statuses/filter', {
   follow: tweetID,
 })
+
+// const subscriptionList = getSubList();
+// try {
+//   localStorage.setItem('subsList', JSON.stringify(subscriptionList));
+//   console.log('list succesfully updated from S3')
+// } catch(err) {
+//   console.log('failed to fetch data');
+// }
 
 bot.start((ctx) => {
   ctx.reply(`Hi! This is unofficial Hololive ID bot.
@@ -69,6 +79,7 @@ bot.command('echo', ctx => {
 })
 
 bot.command('subscribe', ctx => {
+  ctx.replyWithChatAction('typing');
   try {
     let arr = localStorage.getItem('subsList') ? JSON.parse(localStorage.getItem('subsList')) : [];
       console.log(ctx.message);
@@ -76,6 +87,7 @@ bot.command('subscribe', ctx => {
       if (idxID === -1) {
         arr.push(ctx.message.chat.id);
         localStorage.setItem('subsList', JSON.stringify(arr));
+        // postSubList(JSON.stringify(arr));
         ctx.reply('Added to subscription');
       } else {
         ctx.reply('Already subscribed');
@@ -86,13 +98,17 @@ bot.command('subscribe', ctx => {
 })
 
 bot.command('unsubscribe', ctx => {
+  ctx.replyWithChatAction('typing');
   let arr = localStorage.getItem('subsList') ? JSON.parse(localStorage.getItem('subsList')) : [];
   const removedIdx = arr.indexOf(ctx.message.chat.id);
   if (removedIdx > -1) {
     arr.splice(removedIdx, 1);
+    localStorage.setItem('subsList', JSON.stringify(arr));
+    // postSubList(JSON.stringify(arr));
+    ctx.reply('Succesfully unsubscribe');
+  } else {
+    ctx.reply("Can't unsubs when you never subs in the first place")
   }
-  localStorage.setItem('subsList', JSON.stringify(arr));
-  ctx.reply('Succesfully unsubscribe');
 })
 
 console.log('Waiting for tweets');
@@ -132,16 +148,15 @@ stream.on('tweet', function (tweet) {
     }
 
     if (tweet.extended_tweet) {
-      message = `><a href="https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}">${tweet.user.screen_name}</a> tweeted:
+      message = `><a href="https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}">${tweet.user.screen_name}</a> tweeted
     \n${tweet.extended_tweet.full_text}`;
     } else {
-      message = `><a href="https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}">${tweet.user.screen_name}</a> tweeted:
-    \n${tweet.text}`
+      message = `><a href="https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}">${tweet.user.screen_name}</a> tweeted`
     }
 
     if (tweet.retweeted_status) {
       message = `><a href="https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}">${tweet.user.screen_name}</a> retweeted:
-      \n>>${tweet.retweeted_status.user.screen_name}\n\n${tweet.retweeted_status.text}`;
+      >>${tweet.retweeted_status.user.screen_name}\n\n${tweet.retweeted_status.text}`;
     }
 
     if (tweet.quoted_status) {
@@ -150,15 +165,14 @@ stream.on('tweet', function (tweet) {
     }
 
     if (tweet.in_reply_to_status_id_str) {
-      message = `><a href="https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}">${tweet.user.screen_name}</a> replying tweet:
-      \n${tweet.text}\n\nto this <a href="https://twitter.com/i/status/${tweet.in_reply_to_status_id_str}">tweet</a>`
+      message = `><a href="https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}">${tweet.user.screen_name}</a> replying this <a href="https://twitter.com/i/status/${tweet.in_reply_to_status_id_str}">tweet</a>`
     }
-    arr.forEach(recipientID => {
-      bot.telegram.sendMessage(recipientID, message, { parse_mode: 'HTML' })
-    })
+
+    bot.telegram.sendMessage('hololiveid', message, { parse_mode: 'HTML' })
   }
   // bot.telegram.sendMessage(-457078482 ,`Tweet from ${tweet.user.screen_name}\n\n${tweet.text}`)
 });
+
 
 console.log('the bot are running...')
 
