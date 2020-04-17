@@ -168,13 +168,13 @@ stream.on('tweet', function (tweet) {
       message = `><a href="https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}">${tweet.user.screen_name}</a> replying this <a href="https://twitter.com/i/status/${tweet.in_reply_to_status_id_str}">tweet</a>`
     }
 
-    bot.telegram.sendMessage('hololiveid', message, { parse_mode: 'HTML' })
+    bot.telegram.sendMessage('@hololiveid', message, { parse_mode: 'HTML' })
   }
   // bot.telegram.sendMessage(-457078482 ,`Tweet from ${tweet.user.screen_name}\n\n${tweet.text}`)
 });
 
 
 console.log('the bot are running...')
-bot.telegram.sendMessage('hololiveid', 'Test', { parse_mode: 'HTML' })
+bot.telegram.sendMessage('@hololiveid', 'Test', { parse_mode: 'HTML' })
 
 bot.launch();
