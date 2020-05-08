@@ -140,24 +140,24 @@ stream.on('tweet', function(tweet) {
       \n${tweet.text}\n\nquoted tweet:\n>>${tweet.quoted_status.user.screen_name}\n\n${tweet.quoted_status.extended_tweet.full_text}`;
 				if (tweet.quoted_status.extended_tweet.extended_entities) {
 					if (tweet.quoted_status.extended_tweet.extended_entities.media[0].type === 'video' || tweet.quoted_status.extended_tweet.extended_entities.media[0].type === 'animated_gif') {
-						if (tweet.quoted_status.extended_tweet.extended_entities.media[0].type === 'video') {
-							videoFlag = true;
-						}
-						if (tweet.quoted_status.extended_tweet.extended_entities.media[0].type === 'animated_gif') {
-							animationFlag = true;
-						}
-						const { variants = [] } = tweet.quoted_status.extended.tweet.extended_entities.media[0].video_info;
-						let highestBitrate = 0;
-						variants.forEach(variant => {
-							if (variant.bitrate > highestBitrate && variant.content_type === 'video/mp4') {
-								highestBitrate = variant.bitrate;
-							}
-						});
-						const filteredVariant = variants.filter(
-							variant => variant.bitrate === highestBitrate,
-						);
-						videoUrl =
-              filteredVariant.length > 0 ? filteredVariant[0].url : null;
+						// if (tweet.quoted_status.extended_tweet.extended_entities.media[0].type === 'video') {
+						// 	videoFlag = true;
+						// }
+						// if (tweet.quoted_status.extended_tweet.extended_entities.media[0].type === 'animated_gif') {
+						// 	animationFlag = true;
+						// }
+						// const { variants = [] } = tweet.quoted_status.extended.tweet.extended_entities.media[0].video_info;
+						// let highestBitrate = 0;
+						// variants.forEach(variant => {
+						// 	if (variant.bitrate > highestBitrate && variant.content_type === 'video/mp4') {
+						// 		highestBitrate = variant.bitrate;
+						// 	}
+						// });
+						// const filteredVariant = variants.filter(
+						// 	variant => variant.bitrate === highestBitrate,
+						// );
+						// videoUrl =
+            //   filteredVariant.length > 0 ? filteredVariant[0].url : null;
 					}
 				}
 			}
@@ -171,12 +171,12 @@ stream.on('tweet', function(tweet) {
 			message = `><a href="https://twitter.com/${tweet.user.screen_name}/status/${tweet.id_str}">${tweet.user.screen_name}</a> replying this <a href="https://twitter.com/i/status/${tweet.in_reply_to_status_id_str}">tweet</a>`;
 		}
 		bot.telegram.sendMessage('@hololiveid', message, { parse_mode: 'HTML' });
-		if (videoFlag && videoUrl) {
-			bot.telegram.sendVideo('@hololiveid', videoUrl, { supports_streaming: true });
-		}
-		if (animationFlag && videoUrl) {
-			bot.telegram.sendAnimation('@hololiveid', videoUrl);
-		}
+		// if (videoFlag && videoUrl) {
+		// 	bot.telegram.sendVideo('@hololiveid', videoUrl, { supports_streaming: true });
+		// }
+		// if (animationFlag && videoUrl) {
+		// 	bot.telegram.sendAnimation('@hololiveid', videoUrl);
+		// }
 	}
 	// bot.telegram.sendMessage(-457078482 ,`Tweet from ${tweet.user.screen_name}\n\n${tweet.text}`)
 });
